@@ -37,7 +37,7 @@ The goals / steps of this project are the following:
 
 #### 1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
 
-The code for this step is contained in the second code cell of the IPython notebook located in "./AdvancedLaneFinding.ipynb"
+The code for this step is contained in the second code cell of the IPython notebook located in "./AdvancedLaneFinding.ipynb" and in lines 12-37 of the "./AdvancedLaneFinding.py" file
 
 I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.  Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection. 
 
@@ -56,7 +56,7 @@ I applied this distortion correction to one of the test images using the `cv2.un
 
 Cell 4 of the IPython notebook located in "./AdvancedLaneFinding.ipynb" shows the combination of color and gradient thresholds that were used to try to determine the best filter for extracting the lane lines from the image.
 
-The HeavyFilter function in cell 5 contains the combination of thresholds on the saturation and red channels along with sobel x gradients on the saturation and red channels and a magnituded threshold on the saturation channel to create the final filter.
+The HeavyFilter function in cell 5 and in lines 92-111 of the "./AdvancedLaneFinding.py" file contains the combination of thresholds on the saturation and red channels along with sobel x gradients on the saturation and red channels and a magnituded threshold on the saturation channel to create the final filter.
 
 I originally had the LightFilter which is a combination of magnitude, and direction threshold holded combined with a sobel x gradient on the saturation channel of the image, but I was running into issues of getting too much noise on some of the poorer parts of the road so I moved to the HeavyFilter
 
@@ -70,7 +70,7 @@ Here's an example of my output for the HeavyFilter:
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
-The code for my perspective transform includes a function called `Warp()`, which appears in Cell 6 of the IPython notebook located in "./AdvancedLaneFinding.ipynb". The `Warp()` function takes as inputs an image (`image`).  I chose the hardcode the source and destination points in the following manner:
+The code for my perspective transform includes a function called `Warp()`, which appears in Cell 6 of the IPython notebook located in "./AdvancedLaneFinding.ipynb" and in lines 139-161 of the "./AdvancedLaneFinding.py" file. The `Warp()` function takes as inputs an image (`image`).  I chose the hardcode the source and destination points in the following manner:
 
 ```python
     src = np.float32(
@@ -101,19 +101,19 @@ I verified that my perspective transform was working as expected by drawing the 
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-in Cell 7 and 8 of the IPython notebook located in "./AdvancedLaneFinding.ipynb". I performed a window searching method as described in the lectures to find the pixels that corresponds to the lanes then I fit a polynomial to those pixels for each lane. Below is a picture showing the windows and polynomial fit for each lane
+in Cell 7 of the IPython notebook located in "./AdvancedLaneFinding.ipynb" and in lines 164-231 of the "./AdvancedLaneFinding.py" file. I performed a window searching method as described in the lectures to find the pixels that corresponds to the lanes then I fit a polynomial to those pixels for each lane. Below is a picture showing the windows and polynomial fit for each lane
 ![alt text][image6]
 
-in Cell 9 and 10 of the IPython notebook located in "./AdvancedLaneFinding.ipynb". I also implemented a function to search around the previous polynomial for the lines. Below is an image showing the region search based on the window search method and the line fit for the pixles found
+in Cell 8 of the IPython notebook located in "./AdvancedLaneFinding.ipynb" and in lines 245-272 of the "./AdvancedLaneFinding.py" file. I also implemented a function to search around the previous polynomial for the lines. Below is an image showing the region search based on the window search method and the line fit for the pixles found
 
 ![alt text][image7]
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in Cell 11 and 12 of the IPython notebook located in "./AdvancedLaneFinding.ipynb". Using the equations shown in lecture
+I did this in Cell 9 and 10 of the IPython notebook located in "./AdvancedLaneFinding.ipynb" and in lines 275-291 of the "./AdvancedLaneFinding.py" file. Using the equations shown in lecture
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented a version of my lane finding algorithm on all the provided pictures in cell 13 of the IPython notebook located in "./AdvancedLaneFinding.ipynb".
+I implemented a version of my lane finding algorithm on all the provided pictures in cell 11 of the IPython notebook located in "./AdvancedLaneFinding.ipynb".
 
 ![alt text][image8]
 
@@ -131,17 +131,12 @@ Here's a [link to my video result](./project_video.mp4)
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-My approach was to use what was provided in the lectures to 
+My approach was to use the functions provided in the lectures and try to handle any issues with bad lane lines by using information from the previous frames.
 
-My main issues were how to handle bad 
+This approach did not work as well as I had hoped, and my pipeline ended up with problems whenever the lane lines are hard to distinguish from the road. I think the main issue I had was that the lecture functions I used were really geared around performing individual tasks, while the pipeline could use a combination of all the functions to obtain the result.
 
-My main issue was I thought I could filter through the 
+If I were to revist the  this project the main thing I would change is instead of developing the lane finding and filtering individual I would modify them together to try to get the best final result of the lanes. This way the lane finding could compensate for some of the areas that the filtering has issues with and vice virsa.
 
-I think moving to storing the points instead of storing the fit would be a big improvement
-If I were to redo this project I would definitley focus more o
+Another improvement would be to store the lane line points found in each frame instead of just the fitted polynomial coefficients. I think this would help a lot with making transitions between poor and good road conditions.
 
-Currently, the performance is pretty good with the video for this project, however the algorithm fails on the challenge videos, and this is mainly because my binary filter is too restrictive to handle varying intensity of the lane lines. Whenever the lane lines are very light it is difficult to disquish them from the road
-
-If I were to revist this project I would definitley re-evalute my binary filter and try to make it less restrictive and let the lane finding algorithm act as a bit of a filter to figure out where the lanes are.
-
-The other big improvement I would make is to save the points found in the lane finding algorimths and recalculate the polynomial fit based on added together points from 
+Overal, the performance is pretty good with the video for this project, however the algorithm fails on the challenge videos, and this is mainly because my binary filter is too restrictive to handle varying intensity of the lane lines. Whenever the lane lines are very light it is difficult to disquish them from the road.

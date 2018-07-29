@@ -134,7 +134,7 @@ def LightFilter(img, ksize=13, sx_thresh=(20, 100), mag_thresh = (45, 175), dir_
 
 def Pipeline(image):
     undist = undistortImage(image, objpoints, imgpoints)
-    return LightFilter(undist)
+    return HeavyFilter(undist)
 
 def Warp_Test(image):
     img_size = (image.shape[1], image.shape[0])
@@ -425,12 +425,11 @@ def VideoPipeline(img):
     cv2.putText(result, distance_center, (30,120), font, 1, (255,0,0), 2)
         
     return result
-
-LeftLine = Line()
-RightLine = Line()
-    
-write_output = 'result.mp4'
-#clip1 = VideoFileClip("project_video.mp4")
-clip1 = VideoFileClip("project_video.mp4")
-write_clip = clip1.fl_image(VideoPipeline)
-write_clip.write_videofile(write_output, audio=False)
+if(1):
+	LeftLine = Line()
+	RightLine = Line()
+	    
+	write_output = 'result_final.mp4'
+	clip1 = VideoFileClip("project_video.mp4")
+	write_clip = clip1.fl_image(VideoPipeline)
+	write_clip.write_videofile(write_output, audio=False)
